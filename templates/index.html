@@ -1,71 +1,80 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>KIU Meeting AI</title>
+    <title>KIU Meeting AI - Complete System</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             background: #f5f7fa;
             color: #333;
             line-height: 1.6;
         }
-        
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        
+        .container { max-width: 900px; margin: 0 auto; padding: 20px; }
         .header {
             text-align: center;
-            margin-bottom: 40px;
-            padding: 40px 20px;
+            margin-bottom: 30px;
+            padding: 30px;
             background: white;
             border-radius: 12px;
             box-shadow: 0 2px 20px rgba(0,0,0,0.1);
         }
-        
-        .header h1 {
-            color: #2563eb;
-            font-size: 2.5rem;
-            margin-bottom: 10px;
+        .header h1 { color: #2563eb; font-size: 2.5rem; margin-bottom: 10px; }
+        .api-badges {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
         }
-        
-        .header p {
-            color: #666;
-            font-size: 1.1rem;
+        .api-badge {
+            background: #2563eb;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
         }
-        
         .card {
             background: white;
             border-radius: 12px;
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
         }
+        .tabs {
+            display: flex;
+            background: white;
+            border-radius: 8px;
+            padding: 4px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .tab {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            border-radius: 6px;
+            font-size: 15px;
+            text-align: center;
+        }
+        .tab.active { background: #2563eb; color: white; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
         
         .upload-box {
             border: 2px dashed #2563eb;
             border-radius: 12px;
-            padding: 40px;
+            padding: 30px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s ease;
         }
-        
-        .upload-box:hover {
-            background: #f8faff;
-            border-color: #1d4ed8;
-        }
-        
-        .upload-icon {
-            font-size: 3rem;
-            color: #2563eb;
-            margin-bottom: 20px;
-        }
+        .upload-box:hover { background: #f8faff; border-color: #1d4ed8; }
+        .upload-icon { font-size: 2.5rem; color: #2563eb; margin-bottom: 15px; }
         
         .btn {
             background: #2563eb;
@@ -76,19 +85,25 @@
             font-size: 16px;
             cursor: pointer;
             transition: background 0.3s;
-            margin-top: 20px;
         }
+        .btn:hover { background: #1d4ed8; }
+        .btn:disabled { background: #ccc; cursor: not-allowed; }
         
-        .btn:hover {
-            background: #1d4ed8;
+        .search-box {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-bottom: 15px;
         }
+        .search-box:focus { outline: none; border-color: #2563eb; }
         
         .loading {
             display: none;
             text-align: center;
-            padding: 40px;
+            padding: 30px;
         }
-        
         .spinner {
             width: 40px;
             height: 40px;
@@ -96,105 +111,82 @@
             border-top: 3px solid #2563eb;
             border-radius: 50%;
             animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
+            margin: 0 auto 15px;
         }
-        
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
         
-        .results {
-            display: none;
-        }
-        
-        .summary-box {
+        .results { display: none; }
+        .result-section {
             background: #f8faff;
             padding: 20px;
             border-radius: 8px;
-            margin: 20px 0;
+            margin: 15px 0;
             border-left: 4px solid #2563eb;
+        }
+        .result-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #1d4ed8;
         }
         
         .action-item {
             background: #fff7ed;
-            padding: 15px;
-            margin: 10px 0;
-            border-radius: 8px;
-            border-left: 4px solid #f59e0b;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 6px;
+            border-left: 3px solid #f59e0b;
         }
-        
-        .meetings-list {
-            margin-top: 30px;
+        .decision-item {
+            background: #f0fdf4;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 6px;
+            border-left: 3px solid #10b981;
         }
-        
         .meeting-item {
             background: white;
             padding: 20px;
             margin: 15px 0;
             border-radius: 8px;
             border: 1px solid #e5e7eb;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
-        
-        .meeting-date {
-            color: #666;
-            font-size: 0.9rem;
+        .visual-summary {
+            text-align: center;
+            margin: 20px 0;
         }
-        
-        .tabs {
-            display: flex;
-            margin-bottom: 20px;
-            background: white;
+        .visual-summary img {
+            max-width: 100%;
             border-radius: 8px;
-            padding: 4px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
-        
-        .tab {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            background: none;
-            cursor: pointer;
-            border-radius: 6px;
-            font-size: 16px;
+        .search-result {
+            background: #f8faff;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 4px solid #2563eb;
         }
-        
-        .tab.active {
-            background: #2563eb;
+        .similarity-score {
+            background: #10b981;
             color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            float: right;
         }
-        
-        .tab-content {
-            display: none;
-        }
-        
-        .tab-content.active {
-            display: block;
-        }
-        
-        .success {
-            background: #d1fae5;
-            border: 1px solid #10b981;
-            color: #065f46;
-            padding: 12px;
-            border-radius: 8px;
-            margin: 10px 0;
-        }
-        
-        .error {
-            background: #fee2e2;
-            border: 1px solid #ef4444;
-            color: #991b1b;
-            padding: 12px;
-            border-radius: 8px;
-            margin: 10px 0;
-        }
+        .success { background: #d1fae5; border: 1px solid #10b981; color: #065f46; padding: 12px; border-radius: 8px; margin: 10px 0; }
+        .error { background: #fee2e2; border: 1px solid #ef4444; color: #991b1b; padding: 12px; border-radius: 8px; margin: 10px 0; }
         
         @media (max-width: 600px) {
             .container { padding: 15px; }
             .header h1 { font-size: 2rem; }
             .card { padding: 20px; }
+            .api-badges { flex-direction: column; align-items: center; }
         }
     </style>
 </head>
@@ -202,50 +194,72 @@
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <h1>KIU Meeting AI</h1>
-            <p>Save 25,000 GEL per employee with AI-powered meeting processing</p>
+            <h1>🧠 KIU Meeting AI</h1>
+            <p>Complete 4-API Integration System</p>
+            <div class="api-badges">
+                <span class="api-badge">🎤 Whisper API</span>
+                <span class="api-badge">🧠 GPT-4 + Functions</span>
+                <span class="api-badge">🔍 Embeddings API</span>
+                <span class="api-badge">🎨 DALL-E 3 API</span>
+            </div>
         </div>
 
-        <!-- Tabs -->
+        <!-- Navigation -->
         <div class="tabs">
-            <button class="tab active" onclick="showTab('upload')">Upload</button>
-            <button class="tab" onclick="showTab('meetings')">Meetings</button>
+            <button class="tab active" onclick="showTab('upload')">📤 Upload & Process</button>
+            <button class="tab" onclick="showTab('search')">🔍 Semantic Search</button>
+            <button class="tab" onclick="showTab('meetings')">📋 All Meetings</button>
         </div>
 
         <!-- Upload Tab -->
         <div id="upload" class="tab-content active">
             <div class="card">
-                <h2>Upload Meeting Audio</h2>
+                <h2>🎤 Audio Processing (All 4 APIs)</h2>
                 
-                <form id="uploadForm" enctype="multipart/form-data">
-                    <div class="upload-box" onclick="document.getElementById('fileInput').click()">
-                        <div class="upload-icon">📎</div>
-                        <h3>Drop audio file here or click to browse</h3>
-                        <p>Supports .mp3, .wav, .m4a files</p>
-                        <input type="file" id="fileInput" name="file" accept=".mp3,.wav,.m4a" style="display: none;">
-                    </div>
-                    
-                    <!-- Backup visible file input -->
-                    <div style="text-align: center; margin: 20px 0;">
-                        <p><strong>Or select file directly:</strong></p>
-                        <input type="file" id="backupFileInput" name="file" accept=".mp3,.wav,.m4a" style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
-                    </div>
-                    
-                    <div style="text-align: center;">
-                        <button type="submit" class="btn">Process Meeting</button>
-                    </div>
-                </form>
+                <div class="upload-box" onclick="triggerFileUpload()">
+                    <div class="upload-icon">📎</div>
+                    <h3>Upload Meeting Recording</h3>
+                    <p>Supports .mp3, .wav, .m4a files (20-30 minutes)</p>
+                </div>
+                
+                <div style="text-align: center; margin: 20px 0;">
+                    <p><strong>Select audio file:</strong></p>
+                    <input type="file" id="audioFile" accept=".mp3,.wav,.m4a" 
+                           style="padding: 8px; border: 1px solid #ddd; border-radius: 6px; margin: 10px 0;">
+                </div>
+                
+                <div style="text-align: center;">
+                    <button id="processBtn" onclick="processFile()" class="btn" disabled>🚀 Process with 4 APIs</button>
+                </div>
 
-                <!-- Loading -->
+                <!-- Processing Animation -->
                 <div id="loading" class="loading">
                     <div class="spinner"></div>
-                    <h3>Processing your meeting...</h3>
-                    <p>Using Whisper + GPT-4 APIs</p>
+                    <h3>Processing with OpenAI APIs...</h3>
+                    <div style="margin-top: 15px; text-align: left; max-width: 300px; margin-left: auto; margin-right: auto;">
+                        <div>🎤 Whisper: Transcribing audio...</div>
+                        <div>🧠 GPT-4: Analyzing content...</div>
+                        <div>🔍 Embeddings: Creating search index...</div>
+                        <div>🎨 DALL-E 3: Generating visual...</div>
+                    </div>
                 </div>
 
                 <!-- Results -->
                 <div id="results" class="results">
-                    <!-- Results will appear here -->
+                    <!-- Dynamic results here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Search Tab -->
+        <div id="search" class="tab-content">
+            <div class="card">
+                <h2>🔍 Semantic Search (Embeddings API)</h2>
+                <input type="text" id="searchQuery" class="search-box" 
+                       placeholder="Search across all meetings... (e.g., 'budget discussion', 'action items')">
+                <button onclick="performSearch()" class="btn">Search Meetings</button>
+                <div id="searchResults">
+                    <!-- Search results here -->
                 </div>
             </div>
         </div>
@@ -253,16 +267,18 @@
         <!-- Meetings Tab -->
         <div id="meetings" class="tab-content">
             <div class="card">
-                <h2>All Meetings</h2>
-                <div id="meetingsList" class="meetings-list">
-                    <!-- Meetings will be loaded here -->
+                <h2>📋 All Meetings</h2>
+                <div id="meetingsList">
+                    <!-- All meetings here -->
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Tab switching
+        let selectedFile = null;
+
+        // Tab management
         function showTab(tabName) {
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
@@ -270,58 +286,58 @@
             event.target.classList.add('active');
             document.getElementById(tabName).classList.add('active');
             
-            if (tabName === 'meetings') {
-                loadMeetings();
-            }
+            if (tabName === 'meetings') loadMeetings();
         }
 
-        // File upload
-        document.getElementById('uploadForm').onsubmit = async function(e) {
-            e.preventDefault();
-            
-            console.log('Form submitted');
-            
-            // Check both file inputs
-            const fileInput = document.getElementById('fileInput');
-            const backupFileInput = document.getElementById('backupFileInput');
-            
-            let selectedFile = null;
-            
-            if (fileInput && fileInput.files && fileInput.files[0]) {
-                selectedFile = fileInput.files[0];
-                console.log('File from hidden input:', selectedFile.name);
-            } else if (backupFileInput && backupFileInput.files && backupFileInput.files[0]) {
-                selectedFile = backupFileInput.files[0];
-                console.log('File from backup input:', selectedFile.name);
+        // File selection
+        function triggerFileUpload() {
+            document.getElementById('audioFile').click();
+        }
+
+        // Handle file selection
+        document.getElementById('audioFile').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                selectedFile = file;
+                updateUploadBox(file.name);
+                document.getElementById('processBtn').disabled = false;
             }
-            
+        });
+
+        function updateUploadBox(fileName) {
+            const uploadBox = document.querySelector('.upload-box');
+            uploadBox.innerHTML = `
+                <div class="upload-icon">✅</div>
+                <h3>Ready: ${fileName}</h3>
+                <p>All 4 APIs will process this file</p>
+            `;
+            uploadBox.style.borderColor = '#10b981';
+            uploadBox.style.background = '#f0fdf4';
+        }
+
+        // Process file with all 4 APIs
+        async function processFile() {
             if (!selectedFile) {
                 alert('Please select an audio file first');
                 return;
             }
 
-            console.log('Selected file:', selectedFile.name, 'Size:', selectedFile.size);
-
             const formData = new FormData();
             formData.append('file', selectedFile);
             
-            // Show loading
             document.getElementById('loading').style.display = 'block';
             document.getElementById('results').style.display = 'none';
+            document.getElementById('processBtn').disabled = true;
             
             try {
-                console.log('Sending request...');
                 const response = await fetch('/upload', {
                     method: 'POST',
                     body: formData
                 });
                 
-                console.log('Response status:', response.status);
                 const result = await response.json();
-                console.log('Response data:', result);
-                
-                // Hide loading
                 document.getElementById('loading').style.display = 'none';
+                document.getElementById('processBtn').disabled = false;
                 
                 if (result.success) {
                     showResults(result);
@@ -330,103 +346,202 @@
                 }
                 
             } catch (error) {
-                console.error('Upload error:', error);
                 document.getElementById('loading').style.display = 'none';
-                showError('Upload failed: ' + error.message);
+                document.getElementById('processBtn').disabled = false;
+                showError('Processing failed: ' + error.message);
             }
-        };
+        }
 
-        // Show results
+        // Display comprehensive results
         function showResults(data) {
             const resultsDiv = document.getElementById('results');
             resultsDiv.innerHTML = `
-                <div class="success">✅ Meeting processed successfully!</div>
+                <div class="success">✅ All 4 OpenAI APIs processed successfully!</div>
                 
-                <div class="summary-box">
-                    <h3>📋 Summary</h3>
+                <div class="result-section">
+                    <div class="result-title">📋 Summary (GPT-4)</div>
                     <p>${data.summary}</p>
                 </div>
                 
                 ${data.action_items && data.action_items.length > 0 ? `
-                    <h3>✅ Action Items</h3>
-                    ${data.action_items.map(item => `
-                        <div class="action-item">${typeof item === 'string' ? item : item.task || item}</div>
-                    `).join('')}
+                    <div class="result-section">
+                        <div class="result-title">✅ Action Items (Function Calling)</div>
+                        ${data.action_items.map(item => `
+                            <div class="action-item">
+                                <strong>${item.task || item}</strong>
+                                ${item.owner ? `<br>👤 Owner: ${item.owner}` : ''}
+                                ${item.deadline ? `<br>📅 Deadline: ${item.deadline}` : ''}
+                            </div>
+                        `).join('')}
+                    </div>
                 ` : ''}
+                
+                ${data.decisions && data.decisions.length > 0 ? `
+                    <div class="result-section">
+                        <div class="result-title">🎯 Decisions Made</div>
+                        ${data.decisions.map(decision => `
+                            <div class="decision-item">${decision}</div>
+                        `).join('')}
+                    </div>
+                ` : ''}
+                
+                ${data.visual_url && !data.visual_url.includes('failed') ? `
+                    <div class="result-section">
+                        <div class="result-title">🎨 Visual Summary (DALL-E 3)</div>
+                        <div class="visual-summary">
+                            <img src="${data.visual_url}" alt="AI-Generated Meeting Visual">
+                            <p style="margin-top: 10px;">
+                                <a href="${data.visual_url}" target="_blank" class="btn">Download Visual</a>
+                            </p>
+                        </div>
+                    </div>
+                ` : ''}
+                
+                <div class="result-section">
+                    <div class="result-title">🎤 Transcript Preview (Whisper)</div>
+                    <p style="font-style: italic;">${data.transcript}</p>
+                </div>
             `;
             resultsDiv.style.display = 'block';
         }
 
-        // Show error
-        function showError(message) {
-            const resultsDiv = document.getElementById('results');
-            resultsDiv.innerHTML = `<div class="error">❌ ${message}</div>`;
-            resultsDiv.style.display = 'block';
+        // Semantic search
+        async function performSearch() {
+            const query = document.getElementById('searchQuery').value;
+            if (!query.trim()) {
+                alert('Please enter a search query');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/search', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({query: query})
+                });
+                
+                const results = await response.json();
+                displaySearchResults(results);
+                
+            } catch (error) {
+                document.getElementById('searchResults').innerHTML = 
+                    '<div class="error">Search failed: ' + error.message + '</div>';
+            }
         }
 
-        // Load meetings
+        function displaySearchResults(results) {
+            const container = document.getElementById('searchResults');
+            
+            if (results.length === 0) {
+                container.innerHTML = '<p style="text-align: center; padding: 20px;">No meetings found for your query.</p>';
+                return;
+            }
+            
+            container.innerHTML = `
+                <h3 style="margin: 20px 0 10px 0;">🔍 Search Results (${results.length})</h3>
+                ${results.map(result => `
+                    <div class="search-result">
+                        <span class="similarity-score">${(result.similarity * 100).toFixed(1)}% match</span>
+                        <h4>${result.filename}</h4>
+                        <p>${result.summary}</p>
+                    </div>
+                `).join('')}
+            `;
+        }
+
+        // Load all meetings
         async function loadMeetings() {
             try {
                 const response = await fetch('/meetings');
                 const meetings = await response.json();
                 
-                const listDiv = document.getElementById('meetingsList');
+                const container = document.getElementById('meetingsList');
                 
                 if (meetings.length === 0) {
-                    listDiv.innerHTML = '<p style="text-align: center; color: #666;">No meetings yet. Upload your first recording!</p>';
+                    container.innerHTML = '<p style="text-align: center; padding: 40px;">No meetings processed yet. Upload your first recording!</p>';
                     return;
                 }
                 
-                listDiv.innerHTML = meetings.map(meeting => `
+                container.innerHTML = meetings.map(meeting => `
                     <div class="meeting-item">
                         <h3>${meeting.filename}</h3>
-                        <div class="meeting-date">${new Date(meeting.date).toLocaleDateString()}</div>
-                        <div class="summary-box">
+                        <p style="color: #666; margin-bottom: 15px;">${new Date(meeting.date).toLocaleDateString()}</p>
+                        
+                        <div class="result-section">
                             <strong>Summary:</strong> ${meeting.summary}
                         </div>
+                        
                         ${meeting.action_items && meeting.action_items.length > 0 ? `
                             <strong>Action Items:</strong>
                             ${meeting.action_items.map(item => `
-                                <div class="action-item">${typeof item === 'string' ? item : item.task || item}</div>
+                                <div class="action-item">
+                                    ${item.task || item}
+                                    ${item.owner ? ` - ${item.owner}` : ''}
+                                </div>
                             `).join('')}
+                        ` : ''}
+                        
+                        ${meeting.decisions && meeting.decisions.length > 0 ? `
+                            <strong>Decisions:</strong>
+                            ${meeting.decisions.map(decision => `
+                                <div class="decision-item">${decision}</div>
+                            `).join('')}
+                        ` : ''}
+                        
+                        ${meeting.visual_url && !meeting.visual_url.includes('failed') ? `
+                            <div class="visual-summary">
+                                <img src="${meeting.visual_url}" alt="Meeting Visual" style="max-width: 300px;">
+                            </div>
                         ` : ''}
                     </div>
                 `).join('');
                 
             } catch (error) {
                 document.getElementById('meetingsList').innerHTML = 
-                    '<div class="error">Failed to load meetings</div>';
+                    '<div class="error">Failed to load meetings: ' + error.message + '</div>';
             }
         }
 
-        // File input change handlers
-        document.getElementById('fileInput').addEventListener('change', function(e) {
-            if (e.target.files && e.target.files[0]) {
-                updateUploadDisplay(e.target.files[0]);
-            }
-        });
-
-        document.getElementById('backupFileInput').addEventListener('change', function(e) {
-            if (e.target.files && e.target.files[0]) {
-                updateUploadDisplay(e.target.files[0]);
-            }
-        });
-
-        function updateUploadDisplay(file) {
-            const uploadBox = document.querySelector('.upload-box');
-            const fileName = file.name;
-            const fileSize = (file.size / (1024 * 1024)).toFixed(2);
-            
-            uploadBox.innerHTML = `
-                <div class="upload-icon">✅</div>
-                <h3>Ready: ${fileName}</h3>
-                <p>Size: ${fileSize} MB - Click "Process Meeting" to start</p>
-            `;
-            uploadBox.style.borderColor = '#10b981';
-            uploadBox.style.background = '#f0fdf4';
-            
-            console.log('File selected:', fileName);
+        function showError(message) {
+            document.getElementById('results').innerHTML = `<div class="error">❌ ${message}</div>`;
+            document.getElementById('results').style.display = 'block';
         }
+
+        // Search on Enter
+        document.getElementById('searchQuery').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') performSearch();
+        });
+
+        // Demo mode - simulate API responses for testing
+        window.demoMode = function() {
+            selectedFile = { name: 'demo-meeting.mp3' };
+            updateUploadBox('demo-meeting.mp3');
+            document.getElementById('processBtn').disabled = false;
+            
+            // Override processFile for demo
+            window.processFile = function() {
+                document.getElementById('loading').style.display = 'block';
+                document.getElementById('results').style.display = 'none';
+                
+                setTimeout(() => {
+                    document.getElementById('loading').style.display = 'none';
+                    showResults({
+                        success: true,
+                        summary: "Team discussed Q4 budget allocation and project timelines. Key focus on marketing spend and development resources.",
+                        action_items: [
+                            {task: "Finalize Q4 budget proposal", owner: "Sarah", deadline: "Next Friday"},
+                            {task: "Review marketing campaign metrics", owner: "Mike", deadline: "End of week"}
+                        ],
+                        decisions: [
+                            "Increase marketing budget by 20%",
+                            "Extend development timeline by 2 weeks"
+                        ],
+                        transcript: "Welcome everyone to today's quarterly planning meeting. Let's start by reviewing our current budget status and discussing the upcoming Q4 allocations...",
+                        visual_url: "https://via.placeholder.com/400x300/2563eb/ffffff?text=Meeting+Visual"
+                    });
+                }, 3000);
+            };
+        };
     </script>
 </body>
 </html>
