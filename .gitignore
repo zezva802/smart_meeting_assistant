@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environment
+venv/
+ENV/
+env/
+.venv/
+
+# Flask uploads and temporary files
+uploads/
+*.db
+*.sqlite3
+
+# Environment variables
+.env
+
+
+
+# macOS / Linux / Windows system files
+.DS_Store
+Thumbs.db

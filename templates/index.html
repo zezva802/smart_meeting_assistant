@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>KIU Meeting AI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 40px 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+        }
+        
+        .header h1 {
+            color: #2563eb;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+        }
+        
+        .upload-box {
+            border: 2px dashed #2563eb;
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .upload-box:hover {
+            background: #f8faff;
+            border-color: #1d4ed8;
+        }
+        
+        .upload-icon {
+            font-size: 3rem;
+            color: #2563eb;
+            margin-bottom: 20px;
+        }
+        
+        .btn {
+            background: #2563eb;
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
+            margin-top: 20px;
+        }
+        
+        .btn:hover {
+            background: #1d4ed8;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #2563eb;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .results {
+            display: none;
+        }
+        
+        .summary-box {
+            background: #f8faff;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            border-left: 4px solid #2563eb;
+        }
+        
+        .action-item {
+            background: #fff7ed;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 4px solid #f59e0b;
+        }
+        
+        .meetings-list {
+            margin-top: 30px;
+        }
+        
+        .meeting-item {
+            background: white;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .meeting-date {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            background: white;
+            border-radius: 8px;
+            padding: 4px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: none;
+            cursor: pointer;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+        
+        .tab.active {
+            background: #2563eb;
+            color: white;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .success {
+            background: #d1fae5;
+            border: 1px solid #10b981;
+            color: #065f46;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        
+        .error {
+            background: #fee2e2;
+            border: 1px solid #ef4444;
+            color: #991b1b;
+            padding: 12px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        
+        @media (max-width: 600px) {
+            .container { padding: 15px; }
+            .header h1 { font-size: 2rem; }
+            .card { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>KIU Meeting AI</h1>
+            <p>Save 25,000 GEL per employee with AI-powered meeting processing</p>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('upload')">Upload</button>
+            <button class="tab" onclick="showTab('meetings')">Meetings</button>
+        </div>
+
+        <!-- Upload Tab -->
+        <div id="upload" class="tab-content active">
+            <div class="card">
+                <h2>Upload Meeting Audio</h2>
+                
+                <form id="uploadForm" enctype="multipart/form-data">
+                    <div class="upload-box" onclick="document.getElementById('fileInput').click()">
+                        <div class="upload-icon">📎</div>
+                        <h3>Drop audio file here or click to browse</h3>
+                        <p>Supports .mp3, .wav, .m4a files</p>
+                        <input type="file" id="fileInput" name="file" accept=".mp3,.wav,.m4a" style="display: none;">
+                    </div>
+                    
+                    <!-- Backup visible file input -->
+                    <div style="text-align: center; margin: 20px 0;">
+                        <p><strong>Or select file directly:</strong></p>
+                        <input type="file" id="backupFileInput" name="file" accept=".mp3,.wav,.m4a" style="margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 6px;">
+                    </div>
+                    
+                    <div style="text-align: center;">
+                        <button type="submit" class="btn">Process Meeting</button>
+                    </div>
+                </form>
+
+                <!-- Loading -->
+                <div id="loading" class="loading">
+                    <div class="spinner"></div>
+                    <h3>Processing your meeting...</h3>
+                    <p>Using Whisper + GPT-4 APIs</p>
+                </div>
+
+                <!-- Results -->
+                <div id="results" class="results">
+                    <!-- Results will appear here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Meetings Tab -->
+        <div id="meetings" class="tab-content">
+            <div class="card">
+                <h2>All Meetings</h2>
+                <div id="meetingsList" class="meetings-list">
+                    <!-- Meetings will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tab switching
+        function showTab(tabName) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            
+            event.target.classList.add('active');
+            document.getElementById(tabName).classList.add('active');
+            
+            if (tabName === 'meetings') {
+                loadMeetings();
+            }
+        }
+
+        // File upload
+        document.getElementById('uploadForm').onsubmit = async function(e) {
+            e.preventDefault();
+            
+            console.log('Form submitted');
+            
+            // Check both file inputs
+            const fileInput = document.getElementById('fileInput');
+            const backupFileInput = document.getElementById('backupFileInput');
+            
+            let selectedFile = null;
+            
+            if (fileInput && fileInput.files && fileInput.files[0]) {
+                selectedFile = fileInput.files[0];
+                console.log('File from hidden input:', selectedFile.name);
+            } else if (backupFileInput && backupFileInput.files && backupFileInput.files[0]) {
+                selectedFile = backupFileInput.files[0];
+                console.log('File from backup input:', selectedFile.name);
+            }
+            
+            if (!selectedFile) {
+                alert('Please select an audio file first');
+                return;
+            }
+
+            console.log('Selected file:', selectedFile.name, 'Size:', selectedFile.size);
+
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+            
+            // Show loading
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('results').style.display = 'none';
+            
+            try {
+                console.log('Sending request...');
+                const response = await fetch('/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                console.log('Response status:', response.status);
+                const result = await response.json();
+                console.log('Response data:', result);
+                
+                // Hide loading
+                document.getElementById('loading').style.display = 'none';
+                
+                if (result.success) {
+                    showResults(result);
+                } else {
+                    showError(result.error || 'Processing failed');
+                }
+                
+            } catch (error) {
+                console.error('Upload error:', error);
+                document.getElementById('loading').style.display = 'none';
+                showError('Upload failed: ' + error.message);
+            }
+        };
+
+        // Show results
+        function showResults(data) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = `
+                <div class="success">✅ Meeting processed successfully!</div>
+                
+                <div class="summary-box">
+                    <h3>📋 Summary</h3>
+                    <p>${data.summary}</p>
+                </div>
+                
+                ${data.action_items && data.action_items.length > 0 ? `
+                    <h3>✅ Action Items</h3>
+                    ${data.action_items.map(item => `
+                        <div class="action-item">${typeof item === 'string' ? item : item.task || item}</div>
+                    `).join('')}
+                ` : ''}
+            `;
+            resultsDiv.style.display = 'block';
+        }
+
+        // Show error
+        function showError(message) {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = `<div class="error">❌ ${message}</div>`;
+            resultsDiv.style.display = 'block';
+        }
+
+        // Load meetings
+        async function loadMeetings() {
+            try {
+                const response = await fetch('/meetings');
+                const meetings = await response.json();
+                
+                const listDiv = document.getElementById('meetingsList');
+                
+                if (meetings.length === 0) {
+                    listDiv.innerHTML = '<p style="text-align: center; color: #666;">No meetings yet. Upload your first recording!</p>';
+                    return;
+                }
+                
+                listDiv.innerHTML = meetings.map(meeting => `
+                    <div class="meeting-item">
+                        <h3>${meeting.filename}</h3>
+                        <div class="meeting-date">${new Date(meeting.date).toLocaleDateString()}</div>
+                        <div class="summary-box">
+                            <strong>Summary:</strong> ${meeting.summary}
+                        </div>
+                        ${meeting.action_items && meeting.action_items.length > 0 ? `
+                            <strong>Action Items:</strong>
+                            ${meeting.action_items.map(item => `
+                                <div class="action-item">${typeof item === 'string' ? item : item.task || item}</div>
+                            `).join('')}
+                        ` : ''}
+                    </div>
+                `).join('');
+                
+            } catch (error) {
+                document.getElementById('meetingsList').innerHTML = 
+                    '<div class="error">Failed to load meetings</div>';
+            }
+        }
+
+        // File input change handlers
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            if (e.target.files && e.target.files[0]) {
+                updateUploadDisplay(e.target.files[0]);
+            }
+        });
+
+        document.getElementById('backupFileInput').addEventListener('change', function(e) {
+            if (e.target.files && e.target.files[0]) {
+                updateUploadDisplay(e.target.files[0]);
+            }
+        });
+
+        function updateUploadDisplay(file) {
+            const uploadBox = document.querySelector('.upload-box');
+            const fileName = file.name;
+            const fileSize = (file.size / (1024 * 1024)).toFixed(2);
+            
+            uploadBox.innerHTML = `
+                <div class="upload-icon">✅</div>
+                <h3>Ready: ${fileName}</h3>
+                <p>Size: ${fileSize} MB - Click "Process Meeting" to start</p>
+            `;
+            uploadBox.style.borderColor = '#10b981';
+            uploadBox.style.background = '#f0fdf4';
+            
+            console.log('File selected:', fileName);
+        }
+    </script>
+</body>
+</html>
